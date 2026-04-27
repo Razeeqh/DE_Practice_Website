@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataEng Practice Platform</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- CodeMirror for code editor -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" />
+</head>
+<body>
+
+  <!-- LANDING / WELCOME SCREEN -->
+  <div id="screen-landing" class="screen active">
+    <div class="landing-hero">
+      <div class="logo-badge">DE</div>
+      <h1>Data Engineering Practice Platform</h1>
+      <p class="subtitle">Sharpen your skills in Python, PySpark &amp; SQL with real coding challenges.<br/>
+        30 Questions · Auto-graded · Instant feedback</p>
+      <button id="btn-start-exam" class="btn btn-primary btn-lg">Start Exam</button>
+    </div>
+    <div class="feature-cards">
+      <div class="feature-card">
+        <span class="feat-icon">🐍</span>
+        <h3>Python</h3>
+        <p>10 questions covering data manipulation, functions, list comprehensions and more.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feat-icon">⚡</span>
+        <h3>PySpark</h3>
+        <p>10 questions on DataFrames, transformations, aggregations and Spark internals.</p>
+      </div>
+      <div class="feature-card">
+        <span class="feat-icon">🗄️</span>
+        <h3>SQL</h3>
+        <p>10 questions on queries, joins, window functions and query optimisation.</p>
+      </div>
+    </div>
+  </div>
+
+<!-- MODE SELECTION SCREEN -->
+  <div id="screen-mode" class="screen">
+    <div class="top-bar">
+      <div class="logo-badge sm">DE</div>
+      <span class="top-title">Data Engineering Practice Platform</span>
+    </div>
+    <div class="mode-center">
+      <h2>Choose Your Challenge Mode</h2>
+      <p class="hint">Select a mode to set your time limit for all 3 sections (30 questions total).<br/>Timer starts when you pick your first subject.</p>
+      <div class="mode-cards-grid">
+
+        <div class="mode-card mode-moderate" data-mode="moderate" data-mins="90">
+          <div class="mode-card-glow"></div>
+          <div class="mode-icon">📚</div>
+          <div class="mode-name">Moderate</div>
+          <div class="mode-time">90 Min</div>
+          <div class="mode-desc">Comfortable pace. Great for learning, revision, and candidates preparing for interviews.</div>
+          <div class="mode-tag recommended">★ Recommended</div>
+        </div>
+
+        <div class="mode-card mode-expert" data-mode="expert" data-mins="60">
+          <div class="mode-card-glow"></div>
+          <div class="mode-icon">🎯</div>
+          <div class="mode-name">Expert</div>
+          <div class="mode-time">60 Min</div>
+          <div class="mode-desc">Interview-level intensity. Balanced challenge designed for experienced data engineers.</div>
+        </div>
+
+        <div class="mode-card mode-invincible" data-mode="invincible" data-mins="30">
+          <div class="mode-card-glow"></div>
+          <div class="mode-icon">⚡</div>
+          <div class="mode-name">Invincible</div>
+          <div class="mode-time">30 Min</div>
+          <div class="mode-desc">Elite speed run. Only for true senior data engineering veterans. No mercy!</div>
+          <div class="mode-tag danger">Pro Only</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBJECT SELECTOR -->
+  <div id="screen-select" class="screen">
+    <div class="top-bar">
+      <div class="logo-badge sm">DE</div>
+      <span class="top-title">Data Engineering Practice Platform</span>
+      <div id="select-timer-badge" class="select-timer-badge hidden"></div>
+    </div>
+    <div class="select-center">
+      <h2>Choose Your Compiler / Subject</h2>
+      <p class="hint">Select a subject to begin. You will answer 10 questions (Easy / Medium / Hard).</p>
+      <div class="subject-buttons">
+        <button class="btn subject-btn" data-subject="python">
+          <span class="feat-icon">🐍</span> Python
+        </button>
+        <button class="btn subject-btn" data-subject="pyspark">
+          <span class="feat-icon">⚡</span> PySpark
+        </button>
+        <button class="btn subject-btn" data-subject="sql">
+          <span class="feat-icon">🗄️</span> SQL
+        </button>
+      </div>
+      <div id="subject-progress-summary" class="progress-summary hidden">
+        <h3>Exam Progress</h3>
+        <div class="prog-row"><span>🐍 Python</span><span id="prog-python">Not started</span></div>
+        <div class="prog-row"><span>⚡ PySpark</span><span id="prog-pyspark">Not started</span></div>
+        <div class="prog-row"><span>🗄️ SQL</span><span id="prog-sql">Not started</span></div>
+        <button id="btn-final-submit" class="btn btn-primary hidden">Submit All &amp; View Score</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPILER / EXAM SCREEN -->
+  <div id="screen-exam" class="screen">
+    <div class="exam-header">
+      <div class="exam-meta">
+        <div class="logo-badge sm">DE</div>
+        <span id="exam-subject-label" class="subject-label"></span>
+        <span id="exam-difficulty-badge" class="difficulty-badge"></span>
+      </div>
+      <div id="exam-timer" class="exam-timer hidden">
+        <span class="timer-icon">⏱</span>
+        <span id="timer-display" class="timer-display">00:00</span>
+        <span id="timer-mode-label" class="timer-mode-label"></span>
+      </div>
+      <div class="exam-controls">
+        <span id="exam-question-counter" class="q-counter"></span>
+        <button id="btn-back-to-select" class="btn btn-ghost">← Back</button>
+      </div>
+    </div>
+
+    <div class="exam-body">
+      <!-- Left panel: question -->
+      <div class="question-panel">
+        <div id="question-number" class="q-num"></div>
+        <div id="question-text" class="q-text"></div>
+        <div id="question-example" class="q-example"></div>
+        <!-- Schema / DataFrames reference -->
+        <div id="question-schema" class="question-schema hidden"></div>
+        <div id="expected-output-box" class="expected-output hidden">
+          <strong>Expected Output:</strong>
+          <pre id="expected-output-text"></pre>
+        </div>
+
+        <!-- Hint system — only shown on hard questions -->
+        <div id="hint-section" class="hint-section hidden">
+          <div class="hint-header">
+            <span class="hint-label">🔥 Hard Challenge</span>
+            <button id="btn-hint" class="btn btn-hint">💡 Reveal Hint <span id="hint-remaining">(3 left)</span></button>
+          </div>
+          <div id="hint-content" class="hint-content"></div>
+          <div id="hint-badge" class="hint-badge hidden"></div>
+        </div>
+      </div>
+
+      <!-- Right panel: editor + output -->
+      <div class="editor-panel">
+        <div class="editor-toolbar">
+          <span id="lang-label" class="lang-lbl"></span>
+          <div class="toolbar-right">
+            <button id="btn-reset-code" class="btn btn-ghost btn-sm">↺ Reset</button>
+            <button id="btn-run-code" class="btn btn-run">▶ Run Code</button>
+          </div>
+        </div>
+        <div id="editor-wrapper">
+          <textarea id="code-editor"></textarea>
+        </div>
+        <div class="output-section">
+          <div class="output-header">
+            <span>Output</span>
+            <span id="output-status" class="output-status"></span>
+          </div>
+          <pre id="code-output" class="code-output">-- Run your code to see the output --</pre>
+        </div>
+        <div class="action-bar">
+          <button id="btn-prev-question" class="btn btn-ghost" disabled>← Prev</button>
+          <button id="btn-submit-answer" class="btn btn-success" disabled>✓ Submit Answer</button>
+          <button id="btn-next-question" class="btn btn-primary" disabled>Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div id="screen-results" class="screen">
+    <div class="results-wrapper">
+      <div class="results-header">
+        <div class="logo-badge">DE</div>
+        <h2>Exam Complete!</h2>
+        <div id="total-score-display" class="total-score"></div>
+      </div>
+      <div class="score-breakdown">
+        <div class="score-card" id="score-card-python">
+          <div class="score-icon">🐍</div>
+          <div class="score-title">Python</div>
+          <div class="score-val" id="score-val-python">—</div>
+          <div class="score-bar-bg"><div class="score-bar" id="score-bar-python"></div></div>
+        </div>
+        <div class="score-card" id="score-card-pyspark">
+          <div class="score-icon">⚡</div>
+          <div class="score-title">PySpark</div>
+          <div class="score-val" id="score-val-pyspark">—</div>
+          <div class="score-bar-bg"><div class="score-bar" id="score-bar-pyspark"></div></div>
+        </div>
+        <div class="score-card" id="score-card-sql">
+          <div class="score-icon">🗄️</div>
+          <div class="score-title">SQL</div>
+          <div class="score-val" id="score-val-sql">—</div>
+          <div class="score-bar-bg"><div class="score-bar" id="score-bar-sql"></div></div>
+        </div>
+      </div>
+      <div id="results-detail" class="results-detail"></div>
+
+      <!-- PDF Download Section -->
+      <div class="pdf-section">
+        <h3 class="pdf-section-title">📥 Download Reports</h3>
+        <div class="pdf-cards">
+          <div class="pdf-card">
+            <div class="pdf-icon">📄</div>
+            <div class="pdf-info">
+              <strong>Exam Answer Sheet</strong>
+              <span>All 30 questions with your answers, expected outputs, pass/fail status and model solutions.</span>
+            </div>
+            <button id="btn-download-answers" class="btn btn-primary">⬇ Download PDF</button>
+          </div>
+          <div class="pdf-card">
+            <div class="pdf-icon">📚</div>
+            <div class="pdf-info">
+              <strong>DE Interview Theory Guide</strong>
+              <span>Complete theory reference for 6-8 year experienced engineers: Spark, Snowflake, Delta Lake, Databricks &amp; more.</span>
+            </div>
+            <button id="btn-download-theory" class="btn btn-success">⬇ Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-actions">
+        <button id="btn-retake" class="btn btn-primary btn-lg">↺ Retake Exam</button>
+        <button id="btn-review" class="btn btn-ghost btn-lg">🔍 Review Answers</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW MODAL -->
+  <div id="review-modal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Answer Review</h3>
+        <button id="btn-close-modal" class="btn btn-ghost">✕</button>
+      </div>
+      <div id="review-body" class="review-body"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+  <!-- Skulpt: in-browser Python runtime -->
+  <script src="https://skulpt.org/js/skulpt.min.js"></script>
+  <script src="https://skulpt.org/js/skulpt-stdlib.js"></script>
+  <!-- alasql: in-browser SQL engine -->
+  <script src="https://cdn.jsdelivr.net/npm/alasql@4/dist/alasql.min.js"></script>
+  <!-- jsPDF: client-side PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="questions.js"></script>
+  <script src="pdfgen.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
